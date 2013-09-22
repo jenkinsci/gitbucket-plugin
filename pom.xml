@@ -12,6 +12,28 @@
     <version>0.1-SNAPSHOT</version>
     <packaging>hpi</packaging>
   
+    <url>http://wiki.jenkins-ci.org/display/JENKINS/GitBucket+Plugin</url>
+    <licenses>
+        <license>
+            <name>The MIT license</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>ssogabe</id>
+            <name>Seiji Sogabe</name>
+        </developer>
+    </developers>
+    
+    <scm>
+        <connection>scm:git:git://github.com/jenkinsci/gitbucket-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:jenkinsci/gitbucket-plugin.git</developerConnection>
+        <url>https://github.com/jenkinsci/gitbucket-plugin</url>
+    </scm>
+      
     <dependencies>
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
