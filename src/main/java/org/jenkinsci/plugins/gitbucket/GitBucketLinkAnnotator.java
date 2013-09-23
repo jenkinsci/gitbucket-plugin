@@ -57,7 +57,7 @@ public class GitBucketLinkAnnotator extends ChangeLogAnnotator {
         void process(MarkupText text, String url) {
             for (SubText st : text.findTokens(pattern)) {
                 st.surroundWith(
-                        "<a href='" + url + '/' + href + "'>",
+                        "<a href='" + url + href + "'>",
                         "</a>");
             }
         }

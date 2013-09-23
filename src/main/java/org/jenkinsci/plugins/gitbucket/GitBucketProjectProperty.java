@@ -34,7 +34,11 @@ public class GitBucketProjectProperty extends JobProperty<AbstractProject<?, ?>>
 
     @DataBoundConstructor
     public GitBucketProjectProperty(String url, boolean linkEnabled) {
-        this.url = Util.fixEmptyAndTrim(url);
+        String u = Util.fixEmptyAndTrim(url);
+        if (u != null && !u.endsWith("/")) {
+            u = u + '/';
+        }
+        this.url = u;
         this.linkEnabled = linkEnabled;
     }
 
