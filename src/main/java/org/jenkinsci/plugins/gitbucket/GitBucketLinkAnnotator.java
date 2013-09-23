@@ -27,10 +27,10 @@ public class GitBucketLinkAnnotator extends ChangeLogAnnotator {
         }
 
         String url = gpp.getUrl();
-        annotate(url, text);
+        annotate(text, url);
     }
 
-    void annotate(String url, MarkupText text) {
+    void annotate(MarkupText text, String url) {
         for (LinkMarkup markup : MARKUPS) {
             markup.process(text, url);
         }
