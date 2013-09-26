@@ -6,8 +6,9 @@ import hudson.scm.SCM;
 import java.util.Collections;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.multiplescms.MultiSCM;
+import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.HudsonTestCase;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.stapler.StaplerRequest;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -20,15 +21,18 @@ import static org.mockito.Mockito.never;
  *
  * @author sogabe
  */
-public class GitBucketWebHookTest extends HudsonTestCase {
+public class GitBucketWebHookTest {
 
+    @Rule 
+    public JenkinsRule j = new JenkinsRule();
+    
     @Test
     public void testPushTrigger_GitSCM() throws Exception {
         // Repository URL
-        String repo = createTmpDir().getAbsolutePath();
+        String repo = j.createTmpDir().getAbsolutePath();
 
         // Setup FreeStyle Project
-        FreeStyleProject fsp = createFreeStyleProject("GitSCM Project");
+        FreeStyleProject fsp = j.createFreeStyleProject("GitSCM Project");
 
         // Setup Trigger
         GitBucketPushTrigger trigger = mock(GitBucketPushTrigger.class);
@@ -53,10 +57,10 @@ public class GitBucketWebHookTest extends HudsonTestCase {
     @Test
     public void testPushTrigger_NotMatchRepo() throws Exception {
         // Repository URL
-        String repo = createTmpDir().getAbsolutePath();
+        String repo = j.createTmpDir().getAbsolutePath();
 
         // Setup FreeStyle Project
-        FreeStyleProject fsp = createFreeStyleProject("GitSCM Project");
+        FreeStyleProject fsp = j.createFreeStyleProject("GitSCM Project");
 
         // Setup Trigger
         GitBucketPushTrigger trigger = mock(GitBucketPushTrigger.class);
@@ -79,13 +83,13 @@ public class GitBucketWebHookTest extends HudsonTestCase {
         verify(trigger, never()).onPost();
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testPushTrigger_NoPayload() throws Exception {
         // Repository URL
-        String repo = createTmpDir().getAbsolutePath();
+        String repo = j.createTmpDir().getAbsolutePath();
 
         // Setup FreeStyle Project
-        FreeStyleProject fsp = createFreeStyleProject("NoPayload Project");
+        FreeStyleProject fsp = j.createFreeStyleProject("NoPayload Project");
 
         // Setup Trigger
         GitBucketPushTrigger trigger = mock(GitBucketPushTrigger.class);
@@ -102,21 +106,16 @@ public class GitBucketWebHookTest extends HudsonTestCase {
 
         // Post WebHook
         GitBucketWebHook hook = new GitBucketWebHook();
-        try {
-            hook.doIndex(req);
-            fail();
-        } catch (IllegalArgumentException e) {
-            // OK
-        }
+        hook.doIndex(req);
     }
 
     @Test
     public void testPushTrigger_MultiSCM() throws Exception {
         // Repository URL
-        String repo = createTmpDir().getAbsolutePath();
+        String repo = j.createTmpDir().getAbsolutePath();
 
         // Setup FreeStyle Project
-        FreeStyleProject fsp = createFreeStyleProject("MultiSCM Project");
+        FreeStyleProject fsp = j.createFreeStyleProject("MultiSCM Project");
 
         // Setup Trigger
         GitBucketPushTrigger trigger = mock(GitBucketPushTrigger.class);
