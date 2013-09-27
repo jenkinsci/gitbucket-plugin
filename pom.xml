@@ -80,7 +80,8 @@
             <artifactId>mockito-all</artifactId>
             <version>1.9.5</version>
             <scope>test</scope>
-        </dependency>    </dependencies>
+        </dependency>    
+    </dependencies>
     
     <repositories>
         <repository>
