@@ -33,6 +33,29 @@
         <developerConnection>scm:git:git@github.com:jenkinsci/gitbucket-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/gitbucket-plugin</url>
     </scm>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <configuration>
+                    <formats>
+                        <format>xml</format>
+                        <format>html</format>
+                    </formats>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>cobertura</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>        
+    </build>
       
     <dependencies>
         <dependency>
