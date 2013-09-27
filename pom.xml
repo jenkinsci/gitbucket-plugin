@@ -42,7 +42,6 @@
                 <configuration>
                     <formats>
                         <format>xml</format>
-                        <format>html</format>
                     </formats>
                 </configuration>
                 <executions>
@@ -80,7 +79,8 @@
             <artifactId>mockito-all</artifactId>
             <version>1.9.5</version>
             <scope>test</scope>
-        </dependency>    </dependencies>
+        </dependency>    
+    </dependencies>
     
     <repositories>
         <repository>
