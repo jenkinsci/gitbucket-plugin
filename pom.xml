@@ -9,7 +9,7 @@
 
     <artifactId>gitbucket</artifactId>
     <name>GitBucket Plugin</name>
-    <version>0.2</version>
+    <version>0.3-SNAPSHOT</version>
     <packaging>hpi</packaging>
   
     <url>http://wiki.jenkins-ci.org/display/JENKINS/GitBucket+Plugin</url>
