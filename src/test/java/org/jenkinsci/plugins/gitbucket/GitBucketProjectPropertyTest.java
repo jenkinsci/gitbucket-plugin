@@ -47,30 +47,40 @@ import static org.mockito.Mockito.when;
  */
 public class GitBucketProjectPropertyTest {
 
-    private static final String GITBUCKET_URL = "http://localhost/gitbucket/sogabe/gitbucket-plugin/";
+    private static final String GITBUCKET_URL = "http://localhost/gitbucket/sogabe/gitbucket-plugin";
     
     private GitBucketProjectProperty target;
 
     @Test
     public void testNormalizeUrl_NotEndWithSlash() {
         // not end with slash
-        String url = "http://localhost/gitbucket/sogabe/gitbucket-plugin";
-        target = new GitBucketProjectProperty(url, true);
+        target = new GitBucketProjectProperty(GITBUCKET_URL, true);
 
         String actual = target.getUrl();
 
-        assertThat(actual, is(url + '/'));
+        assertThat(actual, is(GITBUCKET_URL));
     }
 
     @Test
-    public void testNormalizeUrl_EndWithSpace() {
-        // end with " "
-        String url = "http://localhost/gitbucket/sogabe/gitbucket-plugin  ";
+    public void testNormalizeUrl_EndWithSlash() {
+        // end with slash
+        String url = GITBUCKET_URL + '/';
         target = new GitBucketProjectProperty(url, true);
 
         String actual = target.getUrl();
 
-        assertThat(actual, is(url.trim() + '/'));
+        assertThat(actual, is(GITBUCKET_URL));
+    }
+    
+    @Test
+    public void testNormalizeUrl_EndWithSpace() {
+        // end with " "
+        String url = GITBUCKET_URL + ' ';
+        target = new GitBucketProjectProperty(url, true);
+
+        String actual = target.getUrl();
+
+        assertThat(actual, is(url.trim()));
     }
 
     @Test

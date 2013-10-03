@@ -52,16 +52,17 @@ public class GitBucketBrowser extends GitRepositoryBrowser {
 
     @DataBoundConstructor
     public GitBucketBrowser(String url) throws MalformedURLException {
-        this.url = normalizeToEndWithSlash(new URL(url));
+        String normalizedUrl = GitBucketUtil.trimEndSlash(url);
+        this.url = new URL(normalizedUrl);
     }
-
+    
     public URL getUrl() {
         return url;
     }
 
     @Override
     public URL getChangeSetLink(GitChangeSet changeSet) throws IOException {
-        return new URL(url, url.getPath() + "commit/" + changeSet.getId().toString());
+        return new URL(url, url.getPath() + "/commit/" + changeSet.getId().toString());
     }
 
     @Override
@@ -88,7 +89,7 @@ public class GitBucketBrowser extends GitRepositoryBrowser {
         if (path.getEditType().equals(EditType.DELETE)) {
             return getDiffLinkRegardlessOfEditType(path);
         } else {
-            String spec = "blob/" + path.getChangeSet().getId() + "/" + path.getPath();
+            String spec = "/blob/" + path.getChangeSet().getId() + "/" + path.getPath();
             return new URL(url, url.getPath() + spec);
         }
     }

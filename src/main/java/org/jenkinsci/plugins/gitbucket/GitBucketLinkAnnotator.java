@@ -50,7 +50,7 @@ public class GitBucketLinkAnnotator extends ChangeLogAnnotator {
         }
 
         String url = gpp.getUrl();
-        annotate(text, url);
+        annotate(text, url + '/');
     }
 
     void annotate(MarkupText text, String url) {

@@ -57,21 +57,10 @@ public class GitBucketProjectProperty extends JobProperty<AbstractProject<?, ?>>
 
     @DataBoundConstructor
     public GitBucketProjectProperty(String url, boolean linkEnabled) {
-        this.url = normalizeUrl(url);
+        this.url = GitBucketUtil.trimEndSlash(url);
         this.linkEnabled = linkEnabled;
     }
     
-    private String normalizeUrl(String url) {
-        String u = Util.fixEmptyAndTrim(url);
-        if (u == null) {
-            return null;
-        }
-        if (u.endsWith("/")) {
-            return u;
-        }
-        return u + "/";
-    }
-
     @Override
     public Collection<? extends Action> getJobActions(AbstractProject<?, ?> job) {
         if (url == null) {
