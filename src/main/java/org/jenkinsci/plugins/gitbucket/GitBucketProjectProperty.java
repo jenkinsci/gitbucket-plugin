@@ -24,7 +24,6 @@
 package org.jenkinsci.plugins.gitbucket;
 
 import hudson.Extension;
-import hudson.Util;
 import hudson.matrix.MatrixRun;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
