@@ -29,10 +29,16 @@ import hudson.model.UnprotectedRootAction;
 import hudson.plugins.git.GitSCM;
 import hudson.scm.SCM;
 import hudson.security.ACL;
+import hudson.security.csrf.CrumbExclusion;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
@@ -51,6 +57,8 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 @Extension
 public class GitBucketWebHook implements UnprotectedRootAction {
 
+    public static final String WEBHOOK_URL = "gitbucket-webhook";
+
     public String getIconFileName() {
         return null;
     }
@@ -60,7 +68,7 @@ public class GitBucketWebHook implements UnprotectedRootAction {
     }
 
     public String getUrlName() {
-        return "gitbucket-webhook";
+        return WEBHOOK_URL;
     }
 
     @RequirePOST
@@ -128,6 +136,24 @@ public class GitBucketWebHook implements UnprotectedRootAction {
                 }
             }
             return urls;
+        }
+    }
+
+    @Extension
+    public static class GitBucketWebHookCrumbExclusion extends CrumbExclusion {
+
+        @Override
+        public boolean process(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws IOException, ServletException {
+            String pathInfo = req.getPathInfo();
+            if (pathInfo != null && pathInfo.equals(getExclusionPath())) {
+                chain.doFilter(req, resp);
+                return true;
+            }
+            return false;
+        }
+
+        private String getExclusionPath() {
+            return '/' + WEBHOOK_URL + '/';
         }
     }
 
