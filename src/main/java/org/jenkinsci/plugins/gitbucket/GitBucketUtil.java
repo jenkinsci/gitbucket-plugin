@@ -23,31 +23,26 @@
  */
 package org.jenkinsci.plugins.gitbucket;
 
-import hudson.model.Action;
+import hudson.Util;
 
 /**
- * Add the GitBucket Icon/Link to the sidebar.
+ * Utility
  * 
  * @author sogabe
  */
-public class GitBucketLinkAction implements Action {
+public final class GitBucketUtil {
 
-    private transient GitBucketProjectProperty property;
-
-    public GitBucketLinkAction(GitBucketProjectProperty property) {
-        this.property = property;
+    private GitBucketUtil() {
     }
     
-    public String getIconFileName() {
-        return "/plugin/gitbucket/images/24x24/gitbucket.png";
-    }
-
-    public String getDisplayName() {
-        return "GitBucket";
-    }
-
-    public String getUrlName() {
-        return property.getUrl();
-    }
-        
+    public static String trimEndSlash(String url) {
+        String u = Util.fixEmptyAndTrim(url);
+        if (u == null) {
+            return null;
+        }
+        if (!u.endsWith("/")) {
+            return u;
+        }
+        return url.substring(0, u.length() - 1);
+    }    
 }
