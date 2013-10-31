@@ -24,6 +24,7 @@
 package org.jenkinsci.plugins.gitbucket;
 
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.AbstractProject;
 import hudson.model.UnprotectedRootAction;
 import hudson.plugins.git.GitSCM;
@@ -87,7 +88,12 @@ public class GitBucketWebHook implements UnprotectedRootAction {
 
     private void processPayload(String payload) {
         JSONObject json = JSONObject.fromObject(payload);
-        String repositoryUrl = json.getJSONObject("repository").getString("url").trim().toLowerCase();
+        String repositoryUrl =  getRepositoryUrl(json);
+        if (repositoryUrl == null) {
+            LOGGER.log(Level.WARNING, "No repository url found.");
+            return;
+        }
+        String pusherName = getPusherName(json);
 
         Authentication old = SecurityContextHolder.getContext().getAuthentication();
         SecurityContextHolder.getContext().setAuthentication(ACL.SYSTEM);
@@ -97,15 +103,34 @@ public class GitBucketWebHook implements UnprotectedRootAction {
                 if (trigger == null) {
                     continue;
                 }
-                if (RepositoryUrlCollector.collect(job).contains(repositoryUrl)) {
-                    // pusher not supported yet.
-                    // TODO
-                    trigger.onPost();
+                if (RepositoryUrlCollector.collect(job).contains(repositoryUrl.toLowerCase())) {
+                    trigger.onPost(pusherName);
                 }
             }
         } finally {
             SecurityContextHolder.getContext().setAuthentication(old);
         }
+    }
+    
+    private String getRepositoryUrl(JSONObject payload) {
+        JSONObject repository = payload.getJSONObject("repository");
+        if (repository.isNullObject()) {
+            return null;
+        }
+        String url = (String) repository.get("url");
+        if (url != null) {
+            url = url.trim();
+        }
+        return url;
+    }
+    
+    private String getPusherName(JSONObject payload) {
+        JSONObject pusher = payload.getJSONObject("pusher");
+        if (pusher.isNullObject()) {
+            return null;
+        }
+        String name = (String) pusher.get("name");
+        return Util.fixEmptyAndTrim(name);
     }
 
     private static class RepositoryUrlCollector {
