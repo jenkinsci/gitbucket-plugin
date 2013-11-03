@@ -59,6 +59,10 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
     public GitBucketPushTrigger() {
     }
 
+    /**
+     * @deprecated 0.4
+     */
+    @Deprecated
     public void onPost() {
         onPost(null);
     }

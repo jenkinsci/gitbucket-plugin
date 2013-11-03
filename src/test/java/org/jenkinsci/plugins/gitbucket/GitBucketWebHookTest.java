@@ -34,6 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.stapler.StaplerRequest;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -67,7 +68,7 @@ public class GitBucketWebHookTest {
         fsp.setScm(scm);
 
         // Setup WebHook request
-        String payload = createPayload(repo);
+        String payload = createPayload(repo, "jenkins");
         StaplerRequest req = mock(StaplerRequest.class);
         when(req.getParameter("payload")).thenReturn(payload);
 
@@ -75,9 +76,70 @@ public class GitBucketWebHookTest {
         GitBucketWebHook hook = new GitBucketWebHook();
         hook.doIndex(req);
 
-        verify(trigger, times(1)).onPost();
+        verify(trigger, times(1)).onPost("jenkins");
     }
 
+    @Test
+    public void testPushTrigger_GitSCM_NoRepositoryUrl() throws Exception {
+        // Repository URL
+        String repo = j.createTmpDir().getAbsolutePath();
+
+        // Setup FreeStyle Project
+        FreeStyleProject fsp = j.createFreeStyleProject("GitSCM Project");
+
+        // Setup Trigger
+        GitBucketPushTrigger trigger = mock(GitBucketPushTrigger.class);
+        fsp.addTrigger(trigger);
+
+        // Setup SCM
+        SCM scm = new GitSCM(repo);
+        fsp.setScm(scm);
+
+        // Setup WebHook request
+        String payload = createPayload(null, "jenkins");
+        StaplerRequest req = mock(StaplerRequest.class);
+        when(req.getParameter("payload")).thenReturn(payload);
+
+        // Post WebHook
+        GitBucketWebHook hook = new GitBucketWebHook();
+        hook.doIndex(req);
+
+        verify(trigger, never()).onPost(anyString());
+    }
+    
+    /**
+     * compatibility test.
+     * 
+     * GitBucket 1.7 or before has not pusher information in WebHook.
+     */
+    @Test
+    public void testPushTrigger_GitSCM_NoPusher() throws Exception {
+        // Repository URL
+        String repo = j.createTmpDir().getAbsolutePath();
+
+        // Setup FreeStyle Project
+        FreeStyleProject fsp = j.createFreeStyleProject("GitSCM Project");
+
+        // Setup Trigger
+        GitBucketPushTrigger trigger = mock(GitBucketPushTrigger.class);
+        fsp.addTrigger(trigger);
+
+        // Setup SCM
+        SCM scm = new GitSCM(repo);
+        fsp.setScm(scm);
+
+        // Setup WebHook request
+        String payload = createPayload(repo, null);
+        StaplerRequest req = mock(StaplerRequest.class);
+        when(req.getParameter("payload")).thenReturn(payload);
+
+        // Post WebHook
+        GitBucketWebHook hook = new GitBucketWebHook();
+        hook.doIndex(req);
+
+        verify(trigger, times(1)).onPost(null);
+    }
+    
     @Test
     public void testPushTrigger_NoMatchRepo() throws Exception {
         // Repository URL
@@ -95,7 +157,7 @@ public class GitBucketWebHookTest {
         fsp.setScm(scm);
 
         // Setup WebHook request
-        String payload = createPayload("No Match Repository");
+        String payload = createPayload("No Match Repository", "jenkins");
         StaplerRequest req = mock(StaplerRequest.class);
         when(req.getParameter("payload")).thenReturn(payload);
 
@@ -104,7 +166,7 @@ public class GitBucketWebHookTest {
         hook.doIndex(req);
 
         // make sure that onPost() never  called.
-        verify(trigger, never()).onPost();
+        verify(trigger, never()).onPost("jenkins");
     }
 
     @Test
@@ -122,7 +184,7 @@ public class GitBucketWebHookTest {
         fsp.setScm(scm);
 
         // Setup WebHook request
-        String payload = createPayload(repo);
+        String payload = createPayload(repo, "jenkins");
         StaplerRequest req = mock(StaplerRequest.class);
         when(req.getParameter("payload")).thenReturn(payload);
 
@@ -146,7 +208,7 @@ public class GitBucketWebHookTest {
         // Setup SCM (No SCM)
 
         // Setup WebHook request
-        String payload = createPayload(repo);
+        String payload = createPayload(repo, "jenkins");
         StaplerRequest req = mock(StaplerRequest.class);
         when(req.getParameter("payload")).thenReturn(payload);
 
@@ -155,7 +217,7 @@ public class GitBucketWebHookTest {
         hook.doIndex(req);
 
         // make sure that onPost() never  called.
-        verify(trigger, never()).onPost();
+        verify(trigger, never()).onPost("jenkins");
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -203,7 +265,7 @@ public class GitBucketWebHookTest {
         fsp.setScm(multiSCM);
 
         // Setup WebHook request
-        String payload = createPayload(repo);
+        String payload = createPayload(repo, "jenkins");
         StaplerRequest req = mock(StaplerRequest.class);
         when(req.getParameter("payload")).thenReturn(payload);
 
@@ -211,14 +273,31 @@ public class GitBucketWebHookTest {
         GitBucketWebHook hook = new GitBucketWebHook();
         hook.doIndex(req);
 
-        verify(trigger, times(1)).onPost();
+        verify(trigger, times(1)).onPost("jenkins");
     }
     
-    private String createPayload(String url) {
-        JSONObject repository = new JSONObject();
-        repository.put("url", url);
+    /**
+     *  { 
+     *    "pusher":{"name":"jenkins",#email":"jenkins@jenkins-ci.org"},
+     *    "repojitory":{"url": "http://git.jenkins-ci.org/jenkins.git"}
+     *   }
+     */
+    private String createPayload(String url, String pusherName) {
         JSONObject json = new JSONObject();
-        json.put("repository", repository);
+ 
+        if (url != null) {
+            JSONObject repository = new JSONObject();
+            repository.put("url", url);
+            json.put("repository", repository);
+        }
+    
+        if (pusherName != null) {
+            JSONObject pusher = new JSONObject();
+            pusher.put("name", pusherName);
+            pusher.put("email", pusherName + "@jenkins-ci.org");
+            json.put("pusher", pusher);
+        }
+        
         return json.toString();
     }
 }
