@@ -34,7 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.stapler.StaplerRequest;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -275,6 +275,34 @@ public class GitBucketWebHookTest {
 
         verify(trigger, times(1)).onPost("jenkins");
     }
+    
+    @Test
+    public void testPushTrigger_NullSCM() throws Exception {
+        // Repository URL
+        String repo = j.createTmpDir().getAbsolutePath();
+
+        // Setup FreeStyle Project
+        FreeStyleProject fsp = j.createFreeStyleProject("NullSCM Project");
+
+        // Setup Trigger
+        GitBucketPushTrigger trigger = mock(GitBucketPushTrigger.class);
+        fsp.addTrigger(trigger);
+
+        // Setup SCM
+        SCM nullSCM = new NullSCM();
+        fsp.setScm(nullSCM);
+
+        // Setup WebHook request
+        String payload = createPayload(repo, "jenkins");
+        StaplerRequest req = mock(StaplerRequest.class);
+        when(req.getParameter("payload")).thenReturn(payload);
+
+        // Post WebHook
+        GitBucketWebHook hook = new GitBucketWebHook();
+        hook.doIndex(req);
+
+        verify(trigger, never()).onPost("jenkins");
+    }    
     
     /**
      *  { 
