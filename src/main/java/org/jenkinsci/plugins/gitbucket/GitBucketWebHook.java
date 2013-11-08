@@ -82,12 +82,13 @@ public class GitBucketWebHook implements UnprotectedRootAction {
                     "Not intended to be browsed interactively (must specify payload parameter)");
         }
 
-        LOGGER.log(Level.FINE, "payload: {0}", payload);
         processPayload(payload);
     }
 
     private void processPayload(String payload) {
         JSONObject json = JSONObject.fromObject(payload);
+        LOGGER.log(Level.FINE, "payload: {0}", json.toString(4));
+
         String repositoryUrl =  getRepositoryUrl(json);
         if (repositoryUrl == null) {
             LOGGER.log(Level.WARNING, "No repository url found.");
