@@ -115,6 +115,13 @@ public class GitBucketPushRequest {
         return commits;
     }
 
+    public Commit getLastCommit() {
+        if (commits.isEmpty()) {
+            return null;
+        }
+        return commits.get(commits.size() - 1);
+    }
+
     public void setCommits(List<Commit> commits) {
         this.commits = commits;
     }
