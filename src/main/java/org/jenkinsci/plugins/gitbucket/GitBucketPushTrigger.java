@@ -30,6 +30,9 @@ import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.Hudson.MasterComputer;
 import hudson.model.Item;
+import hudson.model.ParameterValue;
+import hudson.model.ParametersAction;
+import hudson.model.StringParameterValue;
 import hudson.triggers.SCMTrigger.SCMTriggerCause;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
@@ -40,12 +43,15 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.jelly.XMLOutput;
+import org.jenkinsci.plugins.gitbucket.GitBucketPushRequest.Commit;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -59,15 +65,7 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
     public GitBucketPushTrigger() {
     }
 
-    /**
-     * @deprecated 0.4
-     */
-    @Deprecated
-    public void onPost() {
-        onPost(null);
-    }
-
-    public void onPost(final String triggeredByUser) {
+    public void onPost(final GitBucketPushRequest req) {
         getDescriptor().queue.execute(new Runnable() {
             private boolean polling() {
                 try {
@@ -110,25 +108,43 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
                 LOGGER.log(Level.INFO, "{0} triggered.", job.getName());
                 if (polling()) {
                     String name = " #" + job.getNextBuildNumber();
-                    GitBucketPushCause cause;
-                    try {
-                        cause = new GitBucketPushCause(triggeredByUser, getLogFile());
-                    } catch (IOException ex) {
-                        cause = new GitBucketPushCause(triggeredByUser);
-                    }
-                    if (job.scheduleBuild(cause)) {
+                    GitBucketPushCause cause = createGitBucketPushCause(req);
+                    ParametersAction action = createParametersAction(req);
+                    if (job.scheduleBuild(0, cause, action)) {
                         LOGGER.log(Level.INFO, "SCM changes detected in {0}. Triggering {1}", new String[]{job.getName(), name});
                     } else {
                         LOGGER.log(Level.INFO, "SCM changes detected in {0}. Job is already in the queue.", job.getName());
                     }
                 }
             }
+            
+            private GitBucketPushCause createGitBucketPushCause(GitBucketPushRequest req) {
+                GitBucketPushCause cause;
+                String triggeredByUser = req.getPusher().getName();
+                try {
+                    cause = new GitBucketPushCause(triggeredByUser, getLogFile());
+                } catch (IOException ex) {
+                    cause = new GitBucketPushCause(triggeredByUser);
+                }
+                return cause;
+            }
+            
+            private ParametersAction createParametersAction(GitBucketPushRequest req) {
+                ArrayList<ParameterValue> values = new ArrayList<ParameterValue>();
+                
+                // ${sha1}
+                List<Commit> commits = req.getCommits();
+                Commit lastCommit = commits.get(commits.size() - 1);
+                values.add(new StringParameterValue("sha1", lastCommit.getId()));
+                
+                return new ParametersAction(values);
+            }
         });
     }
 
     public static class GitBucketPushCause extends SCMTriggerCause {
 
-        private String pushedBy;
+        private final String pushedBy;
 
         public GitBucketPushCause(String pushedBy) {
             this.pushedBy = pushedBy;

@@ -88,13 +88,15 @@ public class GitBucketWebHook implements UnprotectedRootAction {
     private void processPayload(String payload) {
         JSONObject json = JSONObject.fromObject(payload);
         LOGGER.log(Level.FINE, "payload: {0}", json.toString(4));
+        LOGGER.log(Level.FINE, "payload: {0}", json.toString());
 
-        String repositoryUrl =  getRepositoryUrl(json);
+        GitBucketPushRequest req = GitBucketPushRequest.create(json);
+
+        String repositoryUrl = req.getRepository().getUrl();
         if (repositoryUrl == null) {
             LOGGER.log(Level.WARNING, "No repository url found.");
             return;
         }
-        String pusherName = getPusherName(json);
 
         Authentication old = SecurityContextHolder.getContext().getAuthentication();
         SecurityContextHolder.getContext().setAuthentication(ACL.SYSTEM);
@@ -105,26 +107,14 @@ public class GitBucketWebHook implements UnprotectedRootAction {
                     continue;
                 }
                 if (RepositoryUrlCollector.collect(job).contains(repositoryUrl.toLowerCase())) {
-                    trigger.onPost(pusherName);
+                    trigger.onPost(req);
                 }
             }
         } finally {
             SecurityContextHolder.getContext().setAuthentication(old);
         }
     }
-    
-    private String getRepositoryUrl(JSONObject payload) {
-        JSONObject repository = payload.getJSONObject("repository");
-        if (repository.isNullObject()) {
-            return null;
-        }
-        String url = (String) repository.get("url");
-        if (url != null) {
-            url = url.trim();
-        }
-        return url;
-    }
-    
+
     private String getPusherName(JSONObject payload) {
         JSONObject pusher = payload.getJSONObject("pusher");
         if (pusher.isNullObject()) {
