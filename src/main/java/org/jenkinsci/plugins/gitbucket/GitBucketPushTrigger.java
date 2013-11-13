@@ -47,7 +47,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.jelly.XMLOutput;
@@ -133,8 +132,7 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
                 ArrayList<ParameterValue> values = new ArrayList<ParameterValue>();
                 
                 // ${sha1}
-                List<Commit> commits = req.getCommits();
-                Commit lastCommit = commits.get(commits.size() - 1);
+                Commit lastCommit = req.getLastCommit();
                 values.add(new StringParameterValue("sha1", lastCommit.getId()));
                 
                 return new ParametersAction(values);
