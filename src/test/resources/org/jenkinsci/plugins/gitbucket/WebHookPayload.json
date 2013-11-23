@@ -1,0 +1,36 @@
+{
+    "pusher":     {
+        "name": "sogabe",
+        "email": "sogabe@xxx.ddo.jp"
+    },
+    "ref": "refs/heads/master",
+    "commits": [    {
+        "id": "9bffdb326046a8dae96c49f0e75f3d9dd8fd8d0c",
+        "message": "Import Apache Camel 2.7.6 base SimpleFtp\n",
+        "timestamp": "Wed Nov 06 09:10:24 JST 2013",
+        "url": "http://xxx.ddo.jp/gitbucket/sogabe/SimpleFtp/commit/9bffdb326046a8dae96c49f0e75f3d9dd8fd8d0c",
+        "added":         [
+            ".gitignore",
+            "pom.xml",
+            "src"
+        ],
+        "removed": [],
+        "modified": [],
+        "author":         {
+            "name": "Seiji Sogabe",
+            "email": "s.sogabe@xxx.com"
+        }
+    }],
+    "repository":     {
+        "name": "SimpleFtp",
+        "url": "http://xxx.ddo.jp/gitbucket/git/sogabe/SimpleFtp.git",
+        "description": "",
+        "watchers": 0,
+        "forks": 0,
+        "private": false,
+        "owner":         {
+            "name": "sogabe",
+            "email": "sogabe@xxx.ddo.jp"
+        }
+    }
+}

@@ -30,6 +30,7 @@ import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.Hudson.MasterComputer;
 import hudson.model.Item;
+import hudson.plugins.git.RevisionParameterAction;
 import hudson.triggers.SCMTrigger.SCMTriggerCause;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
@@ -40,12 +41,15 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.jelly.XMLOutput;
+import org.jenkinsci.plugins.gitbucket.GitBucketPushRequest.Commit;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -55,19 +59,18 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
 
+    private boolean passThroughGitCommit;
+
     @DataBoundConstructor
-    public GitBucketPushTrigger() {
+    public GitBucketPushTrigger(boolean passThroughGitCommit) {
+        this.passThroughGitCommit = passThroughGitCommit;
     }
 
-    /**
-     * @deprecated 0.4
-     */
-    @Deprecated
-    public void onPost() {
-        onPost(null);
+    public boolean isPassThroughGitCommit() {
+        return passThroughGitCommit;
     }
 
-    public void onPost(final String triggeredByUser) {
+    public void onPost(final GitBucketPushRequest req) {
         getDescriptor().queue.execute(new Runnable() {
             private boolean polling() {
                 try {
@@ -110,25 +113,43 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
                 LOGGER.log(Level.INFO, "{0} triggered.", job.getName());
                 if (polling()) {
                     String name = " #" + job.getNextBuildNumber();
-                    GitBucketPushCause cause;
-                    try {
-                        cause = new GitBucketPushCause(triggeredByUser, getLogFile());
-                    } catch (IOException ex) {
-                        cause = new GitBucketPushCause(triggeredByUser);
-                    }
-                    if (job.scheduleBuild(cause)) {
+                    GitBucketPushCause cause = createGitBucketPushCause(req);
+                    Action[] actions = createActions(req);
+                    if (job.scheduleBuild(0, cause, actions)) {
                         LOGGER.log(Level.INFO, "SCM changes detected in {0}. Triggering {1}", new String[]{job.getName(), name});
                     } else {
                         LOGGER.log(Level.INFO, "SCM changes detected in {0}. Job is already in the queue.", job.getName());
                     }
                 }
             }
+
+            private GitBucketPushCause createGitBucketPushCause(GitBucketPushRequest req) {
+                GitBucketPushCause cause;
+                String triggeredByUser = req.getPusher().getName();
+                try {
+                    cause = new GitBucketPushCause(triggeredByUser, getLogFile());
+                } catch (IOException ex) {
+                    cause = new GitBucketPushCause(triggeredByUser);
+                }
+                return cause;
+            }
+
+            private Action[] createActions(GitBucketPushRequest req) {
+                List<Action> actions = new ArrayList<Action>();
+
+                if (passThroughGitCommit) {
+                    Commit lastCommit = req.getLastCommit();
+                    actions.add(new RevisionParameterAction(lastCommit.getId(), false));
+                }
+
+                return actions.toArray(new Action[0]);
+            }
         });
     }
 
     public static class GitBucketPushCause extends SCMTriggerCause {
 
-        private String pushedBy;
+        private final String pushedBy;
 
         public GitBucketPushCause(String pushedBy) {
             this.pushedBy = pushedBy;
@@ -149,7 +170,7 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
             if (pushedBy == null) {
                 return "Started by GitBucket push";
             } else {
-                return "Started by GitBucket push by " + pushedBy;
+                return String.format("Started by GitBucket push by %s", pushedBy);
             }
         }
     }
@@ -158,7 +179,7 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
     public Collection<? extends Action> getProjectActions() {
         return Collections.singletonList(new GitBucketWebHookPollingAction());
     }
-    
+
     public class GitBucketWebHookPollingAction implements Action {
 
         public AbstractProject<?, ?> getOwner() {
@@ -217,5 +238,6 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
         }
 
     }
+
     private static final Logger LOGGER = Logger.getLogger(GitBucketPushTrigger.class.getName());
 }

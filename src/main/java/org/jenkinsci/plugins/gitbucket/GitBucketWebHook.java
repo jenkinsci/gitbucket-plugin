@@ -24,7 +24,6 @@
 package org.jenkinsci.plugins.gitbucket;
 
 import hudson.Extension;
-import hudson.Util;
 import hudson.model.AbstractProject;
 import hudson.model.UnprotectedRootAction;
 import hudson.plugins.git.GitSCM;
@@ -82,18 +81,20 @@ public class GitBucketWebHook implements UnprotectedRootAction {
                     "Not intended to be browsed interactively (must specify payload parameter)");
         }
 
-        LOGGER.log(Level.FINE, "payload: {0}", payload);
         processPayload(payload);
     }
 
     private void processPayload(String payload) {
         JSONObject json = JSONObject.fromObject(payload);
-        String repositoryUrl =  getRepositoryUrl(json);
+        LOGGER.log(Level.FINE, "payload: {0}", json.toString(4));
+
+        GitBucketPushRequest req = GitBucketPushRequest.create(json);
+
+        String repositoryUrl = req.getRepository().getUrl();
         if (repositoryUrl == null) {
             LOGGER.log(Level.WARNING, "No repository url found.");
             return;
         }
-        String pusherName = getPusherName(json);
 
         Authentication old = SecurityContextHolder.getContext().getAuthentication();
         SecurityContextHolder.getContext().setAuthentication(ACL.SYSTEM);
@@ -104,33 +105,12 @@ public class GitBucketWebHook implements UnprotectedRootAction {
                     continue;
                 }
                 if (RepositoryUrlCollector.collect(job).contains(repositoryUrl.toLowerCase())) {
-                    trigger.onPost(pusherName);
+                    trigger.onPost(req);
                 }
             }
         } finally {
             SecurityContextHolder.getContext().setAuthentication(old);
         }
-    }
-    
-    private String getRepositoryUrl(JSONObject payload) {
-        JSONObject repository = payload.getJSONObject("repository");
-        if (repository.isNullObject()) {
-            return null;
-        }
-        String url = (String) repository.get("url");
-        if (url != null) {
-            url = url.trim();
-        }
-        return url;
-    }
-    
-    private String getPusherName(JSONObject payload) {
-        JSONObject pusher = payload.getJSONObject("pusher");
-        if (pusher.isNullObject()) {
-            return null;
-        }
-        String name = (String) pusher.get("name");
-        return Util.fixEmptyAndTrim(name);
     }
 
     private static class RepositoryUrlCollector {

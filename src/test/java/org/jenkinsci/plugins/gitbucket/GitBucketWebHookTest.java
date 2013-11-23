@@ -34,7 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.stapler.StaplerRequest;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -48,9 +48,9 @@ import static org.mockito.Mockito.when;
  */
 public class GitBucketWebHookTest {
 
-    @Rule 
+    @Rule
     public JenkinsRule j = new JenkinsRule();
-    
+
     @Test
     public void testPushTrigger_GitSCM() throws Exception {
         // Repository URL
@@ -76,7 +76,7 @@ public class GitBucketWebHookTest {
         GitBucketWebHook hook = new GitBucketWebHook();
         hook.doIndex(req);
 
-        verify(trigger, times(1)).onPost("jenkins");
+        verify(trigger, times(1)).onPost((GitBucketPushRequest) anyObject());
     }
 
     @Test
@@ -104,12 +104,12 @@ public class GitBucketWebHookTest {
         GitBucketWebHook hook = new GitBucketWebHook();
         hook.doIndex(req);
 
-        verify(trigger, never()).onPost(anyString());
+        verify(trigger, never()).onPost((GitBucketPushRequest) anyObject());
     }
-    
+
     /**
      * compatibility test.
-     * 
+     *
      * GitBucket 1.7 or before has not pusher information in WebHook.
      */
     @Test
@@ -137,9 +137,9 @@ public class GitBucketWebHookTest {
         GitBucketWebHook hook = new GitBucketWebHook();
         hook.doIndex(req);
 
-        verify(trigger, times(1)).onPost(null);
+        verify(trigger, times(1)).onPost((GitBucketPushRequest) anyObject());
     }
-    
+
     @Test
     public void testPushTrigger_NoMatchRepo() throws Exception {
         // Repository URL
@@ -166,7 +166,7 @@ public class GitBucketWebHookTest {
         hook.doIndex(req);
 
         // make sure that onPost() never  called.
-        verify(trigger, never()).onPost("jenkins");
+        verify(trigger, never()).onPost((GitBucketPushRequest) anyObject());
     }
 
     @Test
@@ -178,7 +178,6 @@ public class GitBucketWebHookTest {
         FreeStyleProject fsp = j.createFreeStyleProject("GitSCM Project");
 
         // Setup Trigger(No Trigger)
-
         // Setup SCM
         SCM scm = new GitSCM(repo);
         fsp.setScm(scm);
@@ -192,7 +191,7 @@ public class GitBucketWebHookTest {
         GitBucketWebHook hook = new GitBucketWebHook();
         hook.doIndex(req);
     }
-    
+
     @Test
     public void testPushTrigger_NoSCM() throws Exception {
         // Repository URL
@@ -206,7 +205,6 @@ public class GitBucketWebHookTest {
         fsp.addTrigger(trigger);
 
         // Setup SCM (No SCM)
-
         // Setup WebHook request
         String payload = createPayload(repo, "jenkins");
         StaplerRequest req = mock(StaplerRequest.class);
@@ -217,9 +215,9 @@ public class GitBucketWebHookTest {
         hook.doIndex(req);
 
         // make sure that onPost() never  called.
-        verify(trigger, never()).onPost("jenkins");
+        verify(trigger, never()).onPost((GitBucketPushRequest) anyObject());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testPushTrigger_NoPayload() throws Exception {
         // Repository URL
@@ -273,31 +271,54 @@ public class GitBucketWebHookTest {
         GitBucketWebHook hook = new GitBucketWebHook();
         hook.doIndex(req);
 
-        verify(trigger, times(1)).onPost("jenkins");
+        verify(trigger, times(1)).onPost((GitBucketPushRequest) anyObject());
     }
-    
+
+    @Test
+    public void testPushTrigger_NullSCM() throws Exception {
+        // Repository URL
+        String repo = j.createTmpDir().getAbsolutePath();
+
+        // Setup FreeStyle Project
+        FreeStyleProject fsp = j.createFreeStyleProject("NullSCM Project");
+
+        // Setup Trigger
+        GitBucketPushTrigger trigger = mock(GitBucketPushTrigger.class);
+        fsp.addTrigger(trigger);
+
+        // Setup SCM
+        SCM nullSCM = new NullSCM();
+        fsp.setScm(nullSCM);
+
+        // Setup WebHook request
+        String payload = createPayload(repo, "jenkins");
+        StaplerRequest req = mock(StaplerRequest.class);
+        when(req.getParameter("payload")).thenReturn(payload);
+
+        // Post WebHook
+        GitBucketWebHook hook = new GitBucketWebHook();
+        hook.doIndex(req);
+
+        verify(trigger, never()).onPost((GitBucketPushRequest) anyObject());
+    }
+
     /**
-     *  { 
-     *    "pusher":{"name":"jenkins",#email":"jenkins@jenkins-ci.org"},
-     *    "repojitory":{"url": "http://git.jenkins-ci.org/jenkins.git"}
-     *   }
+     * {
+     * "pusher":{"name":"jenkins",#email":"jenkins@jenkins-ci.org"},
+     * "repojitory":{"url": "http://git.jenkins-ci.org/jenkins.git"} }
      */
     private String createPayload(String url, String pusherName) {
         JSONObject json = new JSONObject();
- 
-        if (url != null) {
-            JSONObject repository = new JSONObject();
-            repository.put("url", url);
-            json.put("repository", repository);
-        }
-    
-        if (pusherName != null) {
-            JSONObject pusher = new JSONObject();
-            pusher.put("name", pusherName);
-            pusher.put("email", pusherName + "@jenkins-ci.org");
-            json.put("pusher", pusher);
-        }
-        
+
+        JSONObject repository = new JSONObject();
+        repository.put("url", url);
+        json.put("repository", repository);
+
+        JSONObject pusher = new JSONObject();
+        pusher.put("name", pusherName);
+        pusher.put("email", pusherName + "@jenkins-ci.org");
+        json.put("pusher", pusher);
+
         return json.toString();
     }
 }

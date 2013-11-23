@@ -24,6 +24,8 @@
 package org.jenkinsci.plugins.gitbucket;
 
 import hudson.Util;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Utility
@@ -45,4 +47,15 @@ public final class GitBucketUtil {
         }
         return url.substring(0, u.length() - 1);
     }    
+
+    public static String[] convertToArray(JSONObject obj, String key) {
+        if (obj == null || obj.isNullObject() || key == null) {
+            return new String[]{};
+        }
+        Object o = obj.get(key);
+        if (!(o instanceof JSONArray)) {
+            return new String[]{};
+        }
+        return (String[]) ((JSONArray) o).toArray();
+    }
 }
