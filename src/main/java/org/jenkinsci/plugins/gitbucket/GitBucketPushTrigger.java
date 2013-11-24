@@ -115,7 +115,7 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
                     String name = " #" + job.getNextBuildNumber();
                     GitBucketPushCause cause = createGitBucketPushCause(req);
                     Action[] actions = createActions(req);
-                    if (job.scheduleBuild(0, cause, actions)) {
+                    if (job.scheduleBuild(job.getQuietPeriod(), cause, actions)) {
                         LOGGER.log(Level.INFO, "SCM changes detected in {0}. Triggering {1}", new String[]{job.getName(), name});
                     } else {
                         LOGGER.log(Level.INFO, "SCM changes detected in {0}. Job is already in the queue.", job.getName());
