@@ -1,6 +1,7 @@
-GitBucket Plugin for Jenkins
-============================
+GitBucket Plugin
+=================
 
+[![Build Status](https://jenkins.ci.cloudbees.com/job/plugins/job/gitbucket-plugin/badge/icon)](https://jenkins.ci.cloudbees.com/job/plugins/job/gitbucket-plugin/)
 
  This plugin integrates [GitBucket](https://github.com/takezoe/gitbucket) to Jenkins.
 
@@ -9,3 +10,5 @@ GitBucket Plugin for Jenkins
 - Hyperlinks to the changeset, diff pages.
 - Trigger a build when a change is pushed to GitBucket.  
   
+
+For more information, see [the Wiki page](https://wiki.jenkins-ci.org/display/JENKINS/GitBucket+Plugin).
