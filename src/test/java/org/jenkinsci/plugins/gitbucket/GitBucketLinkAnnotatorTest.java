@@ -128,6 +128,6 @@ public class GitBucketLinkAnnotatorTest {
         MarkupText markupText = new MarkupText(originalText);
         GitBucketLinkAnnotator annotator = new GitBucketLinkAnnotator();
         annotator.annotate(markupText, GITBUCKET_URL);
-        assertEquals(expectedAnnotatedText, markupText.toString());
+        assertEquals(expectedAnnotatedText, markupText.toString(false));
     }
 }
