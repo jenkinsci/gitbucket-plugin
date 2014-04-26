@@ -67,7 +67,7 @@ public class GitBucketPushRequest {
         JsonConfig config = new JsonConfig();
         config.setRootClass(GitBucketPushRequest.class);
 
-        Map<String, Class> classMap = new HashMap<String, Class>();
+        Map<String, Class<?>> classMap = new HashMap<String, Class<?>>();
         classMap.put("commits", Commit.class);
         classMap.put("added", String.class);
         classMap.put("removed", String.class);
