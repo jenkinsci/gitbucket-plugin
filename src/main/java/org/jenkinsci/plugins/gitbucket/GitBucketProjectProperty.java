@@ -63,7 +63,7 @@ public class GitBucketProjectProperty extends JobProperty<AbstractProject<?, ?>>
     @Override
     public Collection<? extends Action> getJobActions(AbstractProject<?, ?> job) {
         if (url == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         return Collections.singletonList(new GitBucketLinkAction(this));
     }
