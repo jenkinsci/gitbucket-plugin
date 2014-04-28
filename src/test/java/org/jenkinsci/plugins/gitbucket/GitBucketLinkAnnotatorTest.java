@@ -24,8 +24,6 @@
 package org.jenkinsci.plugins.gitbucket;
 
 import hudson.MarkupText;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import static org.junit.Assert.*;
@@ -44,8 +42,8 @@ public class GitBucketLinkAnnotatorTest {
 
     @Test
     public void testAnnoate() {
-        AbstractProject job = mock(FreeStyleProject.class);
-        AbstractBuild build = mock(FreeStyleBuild.class);
+        FreeStyleProject job = mock(FreeStyleProject.class);
+        FreeStyleBuild build = mock(FreeStyleBuild.class);
         GitBucketProjectProperty gpp =  new GitBucketProjectProperty(GITBUCKET_URL, true);
         when(build.getProject()).thenReturn(job);
         when(job.getProperty(GitBucketProjectProperty.class)).thenReturn(gpp);
@@ -60,8 +58,8 @@ public class GitBucketLinkAnnotatorTest {
     
     @Test
     public void testAnnoate_NoProjectProperty() {
-        AbstractProject job = mock(FreeStyleProject.class);
-        AbstractBuild build = mock(FreeStyleBuild.class);
+    	FreeStyleProject job = mock(FreeStyleProject.class);
+    	FreeStyleBuild build = mock(FreeStyleBuild.class);
         GitBucketProjectProperty gpp = null;
         when(build.getProject()).thenReturn(job);
         when(job.getProperty(GitBucketProjectProperty.class)).thenReturn(gpp);
@@ -76,8 +74,8 @@ public class GitBucketLinkAnnotatorTest {
 
     @Test
     public void testAnnoate_LinkDisabled() {
-        AbstractProject job = mock(FreeStyleProject.class);
-        AbstractBuild build = mock(FreeStyleBuild.class);
+    	FreeStyleProject job = mock(FreeStyleProject.class);
+    	FreeStyleBuild build = mock(FreeStyleBuild.class);
         GitBucketProjectProperty gpp = new GitBucketProjectProperty(GITBUCKET_URL, false);
         when(build.getProject()).thenReturn(job);
         when(job.getProperty(GitBucketProjectProperty.class)).thenReturn(gpp);
@@ -130,6 +128,6 @@ public class GitBucketLinkAnnotatorTest {
         MarkupText markupText = new MarkupText(originalText);
         GitBucketLinkAnnotator annotator = new GitBucketLinkAnnotator();
         annotator.annotate(markupText, GITBUCKET_URL);
-        assertEquals(expectedAnnotatedText, markupText.toString());
+        assertEquals(expectedAnnotatedText, markupText.toString(false));
     }
 }
