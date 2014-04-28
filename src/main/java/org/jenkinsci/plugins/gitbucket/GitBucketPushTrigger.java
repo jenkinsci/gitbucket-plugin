@@ -28,7 +28,6 @@ import hudson.Util;
 import hudson.console.AnnotatedLargeText;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
-import hudson.model.Hudson.MasterComputer;
 import hudson.model.Item;
 import hudson.plugins.git.RevisionParameterAction;
 import hudson.triggers.SCMTrigger.SCMTriggerCause;
@@ -48,6 +47,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import jenkins.model.Jenkins.MasterComputer;
+
 import org.apache.commons.jelly.XMLOutput;
 import org.jenkinsci.plugins.gitbucket.GitBucketPushRequest.Commit;
 import org.kohsuke.stapler.DataBoundConstructor;
