@@ -32,6 +32,7 @@ import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.multiplescms.MultiSCM;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.stapler.StaplerRequest;
 import static org.mockito.Matchers.anyObject;
@@ -50,11 +51,13 @@ public class GitBucketWebHookTest {
 
     @Rule
     public JenkinsRule j = new JenkinsRule();
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
     public void testPushTrigger_GitSCM() throws Exception {
         // Repository URL
-        String repo = j.createTmpDir().getAbsolutePath();
+        String repo = temporaryFolder.newFolder().getAbsolutePath();
 
         // Setup FreeStyle Project
         FreeStyleProject fsp = j.createFreeStyleProject("GitSCM Project");
@@ -82,7 +85,7 @@ public class GitBucketWebHookTest {
     @Test
     public void testPushTrigger_GitSCM_NoRepositoryUrl() throws Exception {
         // Repository URL
-        String repo = j.createTmpDir().getAbsolutePath();
+        String repo = temporaryFolder.newFolder().getAbsolutePath();
 
         // Setup FreeStyle Project
         FreeStyleProject fsp = j.createFreeStyleProject("GitSCM Project");
@@ -115,7 +118,7 @@ public class GitBucketWebHookTest {
     @Test
     public void testPushTrigger_GitSCM_NoPusher() throws Exception {
         // Repository URL
-        String repo = j.createTmpDir().getAbsolutePath();
+        String repo = temporaryFolder.newFolder().getAbsolutePath();
 
         // Setup FreeStyle Project
         FreeStyleProject fsp = j.createFreeStyleProject("GitSCM Project");
@@ -143,7 +146,7 @@ public class GitBucketWebHookTest {
     @Test
     public void testPushTrigger_NoMatchRepo() throws Exception {
         // Repository URL
-        String repo = j.createTmpDir().getAbsolutePath();
+        String repo = temporaryFolder.newFolder().getAbsolutePath();
 
         // Setup FreeStyle Project
         FreeStyleProject fsp = j.createFreeStyleProject("GitSCM Project");
@@ -172,7 +175,7 @@ public class GitBucketWebHookTest {
     @Test
     public void testPushTrigger_NoTrigger() throws Exception {
         // Repository URL
-        String repo = j.createTmpDir().getAbsolutePath();
+        String repo = temporaryFolder.newFolder().getAbsolutePath();
 
         // Setup FreeStyle Project
         FreeStyleProject fsp = j.createFreeStyleProject("GitSCM Project");
@@ -195,7 +198,7 @@ public class GitBucketWebHookTest {
     @Test
     public void testPushTrigger_NoSCM() throws Exception {
         // Repository URL
-        String repo = j.createTmpDir().getAbsolutePath();
+        String repo = temporaryFolder.newFolder().getAbsolutePath();
 
         // Setup FreeStyle Project
         FreeStyleProject fsp = j.createFreeStyleProject("GitSCM Project");
@@ -221,7 +224,7 @@ public class GitBucketWebHookTest {
     @Test(expected = IllegalArgumentException.class)
     public void testPushTrigger_NoPayload() throws Exception {
         // Repository URL
-        String repo = j.createTmpDir().getAbsolutePath();
+        String repo = temporaryFolder.newFolder().getAbsolutePath();
 
         // Setup FreeStyle Project
         FreeStyleProject fsp = j.createFreeStyleProject("NoPayload Project");
@@ -247,7 +250,7 @@ public class GitBucketWebHookTest {
     @Test
     public void testPushTrigger_MultiSCM() throws Exception {
         // Repository URL
-        String repo = j.createTmpDir().getAbsolutePath();
+        String repo = temporaryFolder.newFolder().getAbsolutePath();
 
         // Setup FreeStyle Project
         FreeStyleProject fsp = j.createFreeStyleProject("MultiSCM Project");
@@ -277,7 +280,7 @@ public class GitBucketWebHookTest {
     @Test
     public void testPushTrigger_NullSCM() throws Exception {
         // Repository URL
-        String repo = j.createTmpDir().getAbsolutePath();
+        String repo = temporaryFolder.newFolder().getAbsolutePath();
 
         // Setup FreeStyle Project
         FreeStyleProject fsp = j.createFreeStyleProject("NullSCM Project");
