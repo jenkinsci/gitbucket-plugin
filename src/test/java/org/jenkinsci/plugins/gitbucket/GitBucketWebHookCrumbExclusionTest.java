@@ -105,7 +105,7 @@ public class GitBucketWebHookCrumbExclusionTest {
         when(req.getPathInfo()).thenReturn(pathInfo);
         doThrow(new IOException()).when(chain).doFilter(req, res);
         
-        boolean actual = target.process(req, res, chain);
+        target.process(req, res, chain);
     }
 
     @Test(expected = ServletException.class)
@@ -118,7 +118,7 @@ public class GitBucketWebHookCrumbExclusionTest {
         when(req.getPathInfo()).thenReturn(pathInfo);
         doThrow(new ServletException()).when(chain).doFilter(req, res);
         
-        boolean actual = target.process(req, res, chain);
+        target.process(req, res, chain);
     }
     
     
