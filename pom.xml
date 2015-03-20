@@ -32,7 +32,7 @@
         <connection>scm:git:git://github.com/jenkinsci/gitbucket-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jenkinsci/gitbucket-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/gitbucket-plugin</url>
-      <tag>HEAD</tag>
+        <tag>HEAD</tag>
   </scm>
     
     <build>
@@ -70,6 +70,12 @@
             <optional>true</optional>
         </dependency>    
         <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>buildtriggerbadge</artifactId>
+            <version>2.0</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
@@ -78,7 +84,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
+            <version>1.10.19</version>
             <scope>test</scope>
         </dependency>    
     </dependencies>

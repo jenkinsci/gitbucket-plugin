@@ -8,7 +8,8 @@ GitBucket Plugin
 
 - The keywords in changelogs are hyperlinked to the corresponding Issue pages, Pull Requests pages and Wiki pages.
 - Hyperlinks to the changeset, diff pages.
-- Trigger a build when a change is pushed to GitBucket.  
+- Trigger a build when a change is pushed to GitBucket.
+- [Build Trigger Badge Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Build+Trigger+Badge+Plugin) support.
   
 
 For more information, see [the Wiki page](https://wiki.jenkins-ci.org/display/JENKINS/GitBucket+Plugin).
