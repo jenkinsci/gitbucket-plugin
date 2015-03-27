@@ -146,8 +146,8 @@ public class GitBucketProjectPropertyTest {
 
     @Test
     public void testGet_FreeStyleProject() {
-        AbstractProject job = mock(FreeStyleProject.class);
-        AbstractBuild build = mock(FreeStyleBuild.class);
+    	FreeStyleProject job = mock(FreeStyleProject.class);
+    	FreeStyleBuild build = mock(FreeStyleBuild.class);
         GitBucketProjectProperty gpp = new GitBucketProjectProperty(GITBUCKET_URL, true);
 
         when(build.getProject()).thenReturn(job);
@@ -161,8 +161,8 @@ public class GitBucketProjectPropertyTest {
 
     @Test
     public void testGet_MatrixBuild() {
-        AbstractProject job = mock(MatrixProject.class);
-        AbstractBuild build = mock(MatrixBuild.class);
+    	MatrixProject job = mock(MatrixProject.class);
+    	MatrixBuild build = mock(MatrixBuild.class);
         GitBucketProjectProperty gpp = new GitBucketProjectProperty(GITBUCKET_URL, true);
 
         when(build.getProject()).thenReturn(job);
@@ -178,7 +178,7 @@ public class GitBucketProjectPropertyTest {
     public void testGet_MatrixRun() {
         MatrixProject job = mock(MatrixProject.class);
         MatrixConfiguration mc = mock(MatrixConfiguration.class);
-        AbstractBuild build = mock(MatrixRun.class);
+        MatrixRun build = mock(MatrixRun.class);
         GitBucketProjectProperty gpp = new GitBucketProjectProperty(GITBUCKET_URL, true);
 
         when(build.getProject()).thenReturn(mc);
