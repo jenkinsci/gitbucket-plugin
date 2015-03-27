@@ -106,6 +106,5 @@
     <properties>
         <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven-hpi-plugin.version>1.96</maven-hpi-plugin.version>
     </properties>
 </project>
