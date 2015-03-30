@@ -95,6 +95,7 @@ public class GitBucketWebHook implements UnprotectedRootAction {
             LOGGER.log(Level.WARNING, "No repository url found.");
             return;
         }
+        String repositoryCloneUrl = req.getRepository().getCloneUrl();
 
         Authentication old = SecurityContextHolder.getContext().getAuthentication();
         SecurityContextHolder.getContext().setAuthentication(ACL.SYSTEM);
@@ -104,7 +105,11 @@ public class GitBucketWebHook implements UnprotectedRootAction {
                 if (trigger == null) {
                     continue;
                 }
-                if (RepositoryUrlCollector.collect(job).contains(repositoryUrl.toLowerCase())) {
+                List<String> urls = RepositoryUrlCollector.collect(job);
+                // current butbucket returns "clone_url", but old one returs "url", so we check both for compatbility
+                if (urls.contains(repositoryUrl.toLowerCase()) ||
+                    (repositoryCloneUrl != null && urls.contains(repositoryCloneUrl.toLowerCase()))
+                    ) {
                     trigger.onPost(req);
                 }
             }
@@ -136,6 +141,7 @@ public class GitBucketWebHook implements UnprotectedRootAction {
             List<String> urls = new ArrayList<String>();
             for (RemoteConfig config : scm.getRepositories()) {
                 for (URIish uri : config.getURIs()) {
+                    uri = uri.setUser(null).setPass(null); // ignore user and password
                     String u = uri.toString();
                     urls.add(u.trim().toLowerCase());
                 }
