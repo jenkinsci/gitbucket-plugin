@@ -84,6 +84,10 @@ public class GitBucketPushRequest {
                 if ("private".equals(param)) {
                     return "private_";
                 }
+                // TODO: can't we use JavaIdentifierTransformer.CAMEL_CASE ?
+                if("clone_url".equals(param)) {
+                  return "cloneUrl";
+                }
                 return param;
             }
 
@@ -145,6 +149,8 @@ public class GitBucketPushRequest {
 
         private String url;
 
+        private String cloneUrl;
+
         private String description;
 
         private Integer forks;
@@ -170,6 +176,14 @@ public class GitBucketPushRequest {
 
         public void setUrl(String url) {
             this.url = url;
+        }
+
+        public String getCloneUrl() {
+            return cloneUrl;
+        }
+
+        public void setCloneUrl(String cloneUrl) {
+            this.cloneUrl = cloneUrl;
         }
 
         public String getDescription() {
