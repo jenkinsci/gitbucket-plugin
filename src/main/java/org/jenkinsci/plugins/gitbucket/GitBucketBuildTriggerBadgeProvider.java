@@ -27,7 +27,7 @@ import hudson.Extension;
 import hudson.model.Cause;
 import org.jenkinsci.plugins.buildtriggerbadge.provider.BuildTriggerBadgeProvider;
 
-@Extension
+@Extension(optional=true)
 public class GitBucketBuildTriggerBadgeProvider extends BuildTriggerBadgeProvider {
 
     
