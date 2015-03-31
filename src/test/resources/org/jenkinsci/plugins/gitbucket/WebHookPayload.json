@@ -23,7 +23,8 @@
     }],
     "repository":     {
         "name": "SimpleFtp",
-        "url": "http://xxx.ddo.jp/gitbucket/git/sogabe/SimpleFtp.git",
+        "url": "http://xxx.ddo.jp/gitbucket/sogabe/SimpleFtp",
+        "clone_url": "http://xxx.ddo.jp/gitbucket/git/sogabe/SimpleFtp.git",
         "description": "",
         "watchers": 0,
         "forks": 0,
