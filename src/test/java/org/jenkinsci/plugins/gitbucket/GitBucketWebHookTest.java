@@ -303,15 +303,17 @@ public class GitBucketWebHookTest {
     }
 
     /**
+     * GitBucket 3.1 or later.
      * {
      * "pusher":{"name":"jenkins",#email":"jenkins@jenkins-ci.org"},
-     * "repojitory":{"url": "http://git.jenkins-ci.org/jenkins.git"} }
+     * "repojitory":{"clone_url": "http://git.jenkins-ci.org/jenkins.git"} }
      */
     private String createPayload(String url, String pusherName) {
         JSONObject json = new JSONObject();
 
         JSONObject repository = new JSONObject();
-        repository.put("url", url);
+        repository.put("clone_url", url);
+        repository.put("url", "hoge");
         json.put("repository", repository);
 
         JSONObject pusher = new JSONObject();

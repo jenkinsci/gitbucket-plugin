@@ -89,13 +89,11 @@ public class GitBucketWebHook implements UnprotectedRootAction {
         LOGGER.log(Level.FINE, "payload: {0}", json.toString(4));
 
         GitBucketPushRequest req = GitBucketPushRequest.create(json);
-
-        String repositoryUrl = req.getRepository().getUrl();
+        String repositoryUrl = getRepositoryUrl(req);
         if (repositoryUrl == null) {
             LOGGER.log(Level.WARNING, "No repository url found.");
             return;
         }
-        String repositoryCloneUrl = req.getRepository().getCloneUrl();
 
         Authentication old = SecurityContextHolder.getContext().getAuthentication();
         SecurityContextHolder.getContext().setAuthentication(ACL.SYSTEM);
@@ -106,16 +104,22 @@ public class GitBucketWebHook implements UnprotectedRootAction {
                     continue;
                 }
                 List<String> urls = RepositoryUrlCollector.collect(job);
-                // current butbucket returns "clone_url", but old one returs "url", so we check both for compatbility
-                if (urls.contains(repositoryUrl.toLowerCase()) ||
-                    (repositoryCloneUrl != null && urls.contains(repositoryCloneUrl.toLowerCase()))
-                    ) {
+                if (urls.contains(repositoryUrl.toLowerCase())) {
                     trigger.onPost(req);
                 }
             }
         } finally {
             SecurityContextHolder.getContext().setAuthentication(old);
         }
+    }
+
+    private String getRepositoryUrl(GitBucketPushRequest req) {
+        // current gutbucket returns "clone_url", but old one returs "url", so we check both for compatbility
+        // older than gitbucket 3.1
+        String url = req.getRepository().getUrl();
+        // gitbucket 3.1 or later
+        String cloneUrl = req.getRepository().getCloneUrl();
+        return (cloneUrl != null) ? cloneUrl : url;
     }
 
     private static class RepositoryUrlCollector {
