@@ -27,27 +27,30 @@ import hudson.model.Action;
 
 /**
  * Add the GitBucket Icon/Link to the sidebar.
- * 
+ *
  * @author sogabe
  */
 public class GitBucketLinkAction implements Action {
 
-    private transient GitBucketProjectProperty property;
+    private final transient GitBucketProjectProperty property;
 
     public GitBucketLinkAction(GitBucketProjectProperty property) {
         this.property = property;
     }
-    
+
+    @Override
     public String getIconFileName() {
         return "/plugin/gitbucket/images/24x24/gitbucket.png";
     }
 
+    @Override
     public String getDisplayName() {
         return "GitBucket";
     }
 
+    @Override
     public String getUrlName() {
         return property.getUrl();
     }
-        
+
 }
