@@ -26,9 +26,11 @@ package org.jenkinsci.plugins.gitbucket;
 import hudson.MarkupText;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
-import static org.junit.Assert.*;
 import org.junit.Test;
-import static org.mockito.Matchers.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -47,15 +49,15 @@ public class GitBucketLinkAnnotatorTest {
         GitBucketProjectProperty gpp =  new GitBucketProjectProperty(GITBUCKET_URL, true);
         when(build.getProject()).thenReturn(job);
         when(job.getProperty(GitBucketProjectProperty.class)).thenReturn(gpp);
-        
+
         MarkupText text = mock(MarkupText.class);
-                
+
         GitBucketLinkAnnotator target = spy(new GitBucketLinkAnnotator());
         target.annotate(build, null, text);
 
         verify(target, times(1)).annotate(text, GITBUCKET_URL);
     }
-    
+
     @Test
     public void testAnnoate_NoProjectProperty() {
     	FreeStyleProject job = mock(FreeStyleProject.class);
@@ -63,9 +65,9 @@ public class GitBucketLinkAnnotatorTest {
         GitBucketProjectProperty gpp = null;
         when(build.getProject()).thenReturn(job);
         when(job.getProperty(GitBucketProjectProperty.class)).thenReturn(gpp);
-        
+
         MarkupText text = mock(MarkupText.class);
-                
+
         GitBucketLinkAnnotator target = spy(new GitBucketLinkAnnotator());
         target.annotate(build, null, text);
 
@@ -79,17 +81,47 @@ public class GitBucketLinkAnnotatorTest {
         GitBucketProjectProperty gpp = new GitBucketProjectProperty(GITBUCKET_URL, false);
         when(build.getProject()).thenReturn(job);
         when(job.getProperty(GitBucketProjectProperty.class)).thenReturn(gpp);
-        
+
         MarkupText text = mock(MarkupText.class);
-                
+
         GitBucketLinkAnnotator target = spy(new GitBucketLinkAnnotator());
         target.annotate(build, null, text);
 
         verify(target, never()).annotate(eq(text), anyString());
     }
-    
+
     @Test
     public void testAnnotateIssueMarkupText() {
+        assertAnnotatedTextEquals(
+                "(Close #1) Fixed XSS.",
+                "(<a href='" + GITBUCKET_URL + "issues/1'>Close #1</a>) Fixed XSS.");
+        assertAnnotatedTextEquals(
+                "(close #1) Fixed XSS.",
+                "(<a href='" + GITBUCKET_URL + "issues/1'>close #1</a>) Fixed XSS.");
+        assertAnnotatedTextEquals(
+                "(closes #1) Fixed XSS.",
+                "(<a href='" + GITBUCKET_URL + "issues/1'>closes #1</a>) Fixed XSS.");
+        assertAnnotatedTextEquals(
+                "(closed #1) Fixed XSS.",
+                "(<a href='" + GITBUCKET_URL + "issues/1'>closed #1</a>) Fixed XSS.");
+        assertAnnotatedTextEquals(
+                "(fix #1) Fixed XSS.",
+                "(<a href='" + GITBUCKET_URL + "issues/1'>fix #1</a>) Fixed XSS.");
+        assertAnnotatedTextEquals(
+                "(fixes #1) Fixed XSS.",
+                "(<a href='" + GITBUCKET_URL + "issues/1'>fixes #1</a>) Fixed XSS.");
+        assertAnnotatedTextEquals(
+                "(fixed #1) Fixed XSS.",
+                "(<a href='" + GITBUCKET_URL + "issues/1'>fixed #1</a>) Fixed XSS.");
+        assertAnnotatedTextEquals(
+                "(resolve #1) Fixed XSS.",
+                "(<a href='" + GITBUCKET_URL + "issues/1'>resolve #1</a>) Fixed XSS.");
+        assertAnnotatedTextEquals(
+                "(resolves #1) Fixed XSS.",
+                "(<a href='" + GITBUCKET_URL + "issues/1'>resolves #1</a>) Fixed XSS.");
+        assertAnnotatedTextEquals(
+                "(resolved #1) Fixed XSS.",
+                "(<a href='" + GITBUCKET_URL + "issues/1'>resolved #1</a>) Fixed XSS.");
         assertAnnotatedTextEquals(
                 "(refs #1) Fixed XSS.",
                 "(<a href='" + GITBUCKET_URL + "issues/1'>refs #1</a>) Fixed XSS.");

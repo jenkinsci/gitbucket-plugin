@@ -27,6 +27,7 @@ import hudson.Extension;
 import hudson.MarkupText;
 import hudson.MarkupText.SubText;
 import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.scm.ChangeLogAnnotator;
 import hudson.scm.ChangeLogSet;
 import java.util.regex.Pattern;
@@ -40,7 +41,7 @@ import java.util.regex.Pattern;
 public class GitBucketLinkAnnotator extends ChangeLogAnnotator {
 
     @Override
-    public void annotate(AbstractBuild<?, ?> build, ChangeLogSet.Entry change, MarkupText text) {
+    public void annotate(Run<?, ?> build, ChangeLogSet.Entry change, MarkupText text) {
         GitBucketProjectProperty gpp = GitBucketProjectProperty.get(build);
         if (gpp == null) {
             return;
@@ -53,6 +54,12 @@ public class GitBucketLinkAnnotator extends ChangeLogAnnotator {
         annotate(text, url + '/');
     }
 
+    @Deprecated
+    @Override
+    public void annotate(AbstractBuild<?, ?> build, ChangeLogSet.Entry change, MarkupText text) {
+        annotate((Run<?, ?>) build, change, text);
+    }
+
     void annotate(MarkupText text, String url) {
         for (LinkMarkup markup : MARKUPS) {
             markup.process(text, url);
@@ -60,6 +67,15 @@ public class GitBucketLinkAnnotator extends ChangeLogAnnotator {
     }
 
     private static final LinkMarkup[] MARKUPS = new LinkMarkup[]{
+        new LinkMarkup("close\\s+#?(\\d+)", "issues/$1"),
+        new LinkMarkup("closes\\s+#?(\\d+)", "issues/$1"),
+        new LinkMarkup("closed\\s+#?(\\d+)", "issues/$1"),
+        new LinkMarkup("fix\\s+#?(\\d+)", "issues/$1"),
+        new LinkMarkup("fixes\\s+#?(\\d+)", "issues/$1"),
+        new LinkMarkup("fixed\\s+#?(\\d+)", "issues/$1"),
+        new LinkMarkup("resolve\\s+#?(\\d+)", "issues/$1"),
+        new LinkMarkup("resolves\\s+#?(\\d+)", "issues/$1"),
+        new LinkMarkup("resolved\\s+#?(\\d+)", "issues/$1"),
         new LinkMarkup("refs\\s+#?(\\d+)", "issues/$1"),
         new LinkMarkup("issue\\s+#?(\\d+)", "issues/$1"),
         new LinkMarkup("pull\\s+#?(\\d+)", "pulls/$1"),
@@ -73,7 +89,7 @@ public class GitBucketLinkAnnotator extends ChangeLogAnnotator {
         private final String href;
 
         LinkMarkup(String pattern, String href) {
-            this.pattern = Pattern.compile(pattern);
+            this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
             this.href = href;
         }
 
