@@ -59,14 +59,17 @@ public class GitBucketWebHook implements UnprotectedRootAction {
 
     public static final String WEBHOOK_URL = "gitbucket-webhook";
 
+    @Override
     public String getIconFileName() {
         return null;
     }
 
+    @Override
     public String getDisplayName() {
         return null;
     }
 
+    @Override
     public String getUrlName() {
         return WEBHOOK_URL;
     }
@@ -114,8 +117,8 @@ public class GitBucketWebHook implements UnprotectedRootAction {
     }
 
     private String getRepositoryUrl(GitBucketPushRequest req) {
-        // current gutbucket returns "clone_url", but old one returs "url", so we check both for compatbility
-        // older than gitbucket 3.1
+        // current gutbucket returns "clone_url", but old one returs "url",
+        // so we check both for compatbility older than gitbucket 3.1
         String url = req.getRepository().getUrl();
         // gitbucket 3.1 or later
         String cloneUrl = req.getRepository().getCloneUrl();
@@ -129,7 +132,8 @@ public class GitBucketWebHook implements UnprotectedRootAction {
             SCM scm = job.getScm();
             if (scm instanceof GitSCM) {
                 urls.addAll(collect((GitSCM) scm));
-            } else if (Jenkins.getInstance().getPlugin("multiple-scms") != null && scm instanceof MultiSCM) {
+            } else if (Jenkins.getInstance().getPlugin("multiple-scms") != null
+                    && scm instanceof MultiSCM) {
                 MultiSCM multiSCM = (MultiSCM) scm;
                 List<SCM> scms = multiSCM.getConfiguredSCMs();
                 for (SCM s : scms) {
@@ -158,7 +162,8 @@ public class GitBucketWebHook implements UnprotectedRootAction {
     public static class GitBucketWebHookCrumbExclusion extends CrumbExclusion {
 
         @Override
-        public boolean process(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws IOException, ServletException {
+        public boolean process(HttpServletRequest req, HttpServletResponse resp,
+                FilterChain chain) throws IOException, ServletException {
             String pathInfo = req.getPathInfo();
             if (pathInfo != null && pathInfo.equals(getExclusionPath())) {
                 chain.doFilter(req, resp);

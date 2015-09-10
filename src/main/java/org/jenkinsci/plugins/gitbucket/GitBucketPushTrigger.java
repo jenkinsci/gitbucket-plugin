@@ -47,9 +47,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import jenkins.model.Jenkins.MasterComputer;
-
 import org.apache.commons.jelly.XMLOutput;
 import org.jenkinsci.plugins.gitbucket.GitBucketPushRequest.Commit;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -82,9 +80,11 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
                         PrintStream logger = listener.getLogger();
 
                         long start = System.currentTimeMillis();
-                        logger.println("Started on " + DateFormat.getDateTimeInstance().format(new Date()));
+                        logger.println("Started on "
+                                + DateFormat.getDateTimeInstance().format(new Date()));
                         boolean result = job.poll(listener).hasChanges();
-                        logger.println("Done. Took " + Util.getTimeSpanString(System.currentTimeMillis() - start));
+                        logger.println("Done. Took "
+                                + Util.getTimeSpanString(System.currentTimeMillis() - start));
 
                         if (result) {
                             logger.println("Changes found");
@@ -118,9 +118,11 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
                     GitBucketPushCause cause = createGitBucketPushCause(req);
                     Action[] actions = createActions(req);
                     if (job.scheduleBuild(job.getQuietPeriod(), cause, actions)) {
-                        LOGGER.log(Level.INFO, "SCM changes detected in {0}. Triggering {1}", new String[]{job.getName(), name});
+                        LOGGER.log(Level.INFO, "SCM changes detected in {0}. Triggering {1}",
+                                new String[]{job.getName(), name});
                     } else {
-                        LOGGER.log(Level.INFO, "SCM changes detected in {0}. Job is already in the queue.", job.getName());
+                        LOGGER.log(Level.INFO, "SCM changes detected in {0}. Job is already in the queue.",
+                                job.getName());
                     }
                 }
             }
@@ -188,14 +190,17 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
             return job;
         }
 
+        @Override
         public String getIconFileName() {
             return "/plugin/gitbucket/images/24x24/gitbucket-log.png";
         }
 
+        @Override
         public String getDisplayName() {
             return "GitBucket Hook Log";
         }
 
+        @Override
         public String getUrlName() {
             return "GitBucketPollLog";
         }
@@ -222,7 +227,8 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
     @Extension
     public static class GitBucketPushTriggerDescriptor extends TriggerDescriptor {
 
-        private transient final SequentialExecutionQueue queue = new SequentialExecutionQueue(MasterComputer.threadPoolForRemoting);
+        private transient final SequentialExecutionQueue queue
+                = new SequentialExecutionQueue(MasterComputer.threadPoolForRemoting);
 
         @Override
         public boolean isApplicable(Item item) {

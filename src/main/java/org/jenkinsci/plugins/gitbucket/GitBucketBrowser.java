@@ -30,8 +30,6 @@ import hudson.plugins.git.GitChangeSet.Path;
 import hudson.plugins.git.browser.GitRepositoryBrowser;
 import hudson.scm.EditType;
 import hudson.scm.RepositoryBrowser;
-import org.kohsuke.stapler.DataBoundConstructor;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import net.sf.json.JSONObject;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
@@ -55,7 +54,7 @@ public class GitBucketBrowser extends GitRepositoryBrowser {
 
     @Override
     public URL getChangeSetLink(GitChangeSet changeSet) throws IOException {
-        return new URL(getUrl(), "commit/" + changeSet.getId().toString());
+        return new URL(getUrl(), "commit/" + changeSet.getId());
     }
 
     @Override
@@ -90,6 +89,7 @@ public class GitBucketBrowser extends GitRepositoryBrowser {
     @Extension
     public static class GitBucketBrowserDescriptor extends Descriptor<RepositoryBrowser<?>> {
 
+        @Override
         public String getDisplayName() {
             return "GitBucket";
         }
