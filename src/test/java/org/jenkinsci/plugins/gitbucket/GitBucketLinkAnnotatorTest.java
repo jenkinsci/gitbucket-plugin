@@ -134,6 +134,10 @@ public class GitBucketLinkAnnotatorTest {
         assertAnnotatedTextEquals(
                 "(issue 100) Fixed XSS.",
                 "(<a href='" + GITBUCKET_URL + "issues/100'>issue 100</a>) Fixed XSS.");
+        assertAnnotatedTextEquals(
+                "(Close #1) (Fixed #3) Fixed XSS.",
+                "(<a href='" + GITBUCKET_URL + "issues/1'>Close #1</a>) "
+                        + "(<a href='" + GITBUCKET_URL + "issues/3'>Fixed #3</a>) Fixed XSS.");
     }
 
     @Test
