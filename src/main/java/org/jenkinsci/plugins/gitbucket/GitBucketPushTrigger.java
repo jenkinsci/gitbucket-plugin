@@ -111,6 +111,7 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
                 return false;
             }
 
+            @Override
             public void run() {
                 LOGGER.log(Level.INFO, "{0} triggered.", job.getName());
                 if (polling()) {
@@ -156,7 +157,7 @@ public class GitBucketPushTrigger extends Trigger<AbstractProject<?, ?>> {
         private final String pushedBy;
 
         public GitBucketPushCause(String pushedBy) {
-            this.pushedBy = pushedBy;
+            this(pushedBy, "");
         }
 
         public GitBucketPushCause(String pushedBy, File logFile) throws IOException {
