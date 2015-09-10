@@ -31,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.stapler.StaplerRequest;
+
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -68,6 +69,7 @@ public class GitBucketWebHookCompatibleTest {
         String payload = createPayload(repo, "jenkins");
         StaplerRequest req = mock(StaplerRequest.class);
         when(req.getParameter("payload")).thenReturn(payload);
+        when(req.getHeader("X-Github-Event")).thenReturn("push");
 
         // Post WebHook
         GitBucketWebHook hook = new GitBucketWebHook();
