@@ -9,7 +9,7 @@
 
     <artifactId>gitbucket</artifactId>
     <name>GitBucket Plugin</name>
-    <version>0.8-SNAPSHOT</version>
+    <version>0.8</version>
     <packaging>hpi</packaging>
   
     <url>http://wiki.jenkins-ci.org/display/JENKINS/GitBucket+Plugin</url>
@@ -32,7 +32,7 @@
         <connection>scm:git:git://github.com/jenkinsci/gitbucket-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jenkinsci/gitbucket-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/gitbucket-plugin</url>
-        <tag>HEAD</tag>
+        <tag>gitbucket-0.8</tag>
     </scm>
     
     <build>
