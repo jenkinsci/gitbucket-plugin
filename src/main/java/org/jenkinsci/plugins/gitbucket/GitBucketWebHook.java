@@ -76,7 +76,12 @@ public class GitBucketWebHook implements UnprotectedRootAction {
 
     @RequirePOST
     public void doIndex(StaplerRequest req) {
-        LOGGER.log(Level.FINE, "WebHook called.");
+        String event = req.getHeader("X-Github-Event");
+        LOGGER.log(Level.FINE, "WebHook called. event: {0}", event);
+        if (!"push".equals(event)) {
+            LOGGER.log(Level.FINE, "Only push event can be accepted.");
+            return;
+        }
 
         String payload = req.getParameter("payload");
         if (payload == null) {

@@ -34,6 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.stapler.StaplerRequest;
+
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -71,12 +72,42 @@ public class GitBucketWebHookTest {
         String payload = createPayload(repo, "jenkins");
         StaplerRequest req = mock(StaplerRequest.class);
         when(req.getParameter("payload")).thenReturn(payload);
+        when(req.getHeader("X-Github-Event")).thenReturn("push");
 
         // Post WebHook
         GitBucketWebHook hook = new GitBucketWebHook();
         hook.doIndex(req);
 
         verify(trigger, times(1)).onPost((GitBucketPushRequest) anyObject());
+    }
+
+    @Test
+    public void testPushTrigger_NoPushEvent() throws Exception {
+        // Repository URL
+        String repo = j.createTmpDir().getAbsolutePath();
+
+        // Setup FreeStyle Project
+        FreeStyleProject fsp = j.createFreeStyleProject("GitSCM Project");
+
+        // Setup Trigger
+        GitBucketPushTrigger trigger = mock(GitBucketPushTrigger.class);
+        fsp.addTrigger(trigger);
+
+        // Setup SCM
+        SCM scm = new GitSCM(repo);
+        fsp.setScm(scm);
+
+        // Setup WebHook request
+        String payload = createPayload(repo, "jenkins");
+        StaplerRequest req = mock(StaplerRequest.class);
+        when(req.getParameter("payload")).thenReturn(payload);
+        when(req.getHeader("X-Github-Event")).thenReturn("comment");
+
+        // Post WebHook
+        GitBucketWebHook hook = new GitBucketWebHook();
+        hook.doIndex(req);
+
+        verify(trigger, never()).onPost((GitBucketPushRequest) anyObject());
     }
 
     @Test
@@ -132,6 +163,7 @@ public class GitBucketWebHookTest {
         String payload = createPayload(repo, null);
         StaplerRequest req = mock(StaplerRequest.class);
         when(req.getParameter("payload")).thenReturn(payload);
+        when(req.getHeader("X-Github-Event")).thenReturn("push");
 
         // Post WebHook
         GitBucketWebHook hook = new GitBucketWebHook();
@@ -238,6 +270,7 @@ public class GitBucketWebHookTest {
         String payload = null;
         StaplerRequest req = mock(StaplerRequest.class);
         when(req.getParameter("payload")).thenReturn(payload);
+        when(req.getHeader("X-Github-Event")).thenReturn("push");
 
         // Post WebHook
         GitBucketWebHook hook = new GitBucketWebHook();
@@ -266,6 +299,7 @@ public class GitBucketWebHookTest {
         String payload = createPayload(repo, "jenkins");
         StaplerRequest req = mock(StaplerRequest.class);
         when(req.getParameter("payload")).thenReturn(payload);
+        when(req.getHeader("X-Github-Event")).thenReturn("push");
 
         // Post WebHook
         GitBucketWebHook hook = new GitBucketWebHook();
