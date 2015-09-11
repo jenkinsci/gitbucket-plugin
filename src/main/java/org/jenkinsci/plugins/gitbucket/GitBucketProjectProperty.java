@@ -24,6 +24,7 @@
 package org.jenkinsci.plugins.gitbucket;
 
 import hudson.Extension;
+import hudson.Util;
 import hudson.matrix.MatrixRun;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -32,6 +33,7 @@ import hudson.model.Job;
 import hudson.model.JobProperty;
 import hudson.model.JobPropertyDescriptor;
 import hudson.model.Run;
+import hudson.util.Secret;
 import java.util.Collection;
 import java.util.Collections;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -47,6 +49,8 @@ public class GitBucketProjectProperty extends JobProperty<AbstractProject<?, ?>>
 
     private final boolean linkEnabled;
 
+    private final Secret token;
+
     public String getUrl() {
         return url;
     }
@@ -55,10 +59,15 @@ public class GitBucketProjectProperty extends JobProperty<AbstractProject<?, ?>>
         return linkEnabled;
     }
 
+    public Secret getToken() {
+        return token;
+    }
+
     @DataBoundConstructor
-    public GitBucketProjectProperty(String url, boolean linkEnabled) {
+    public GitBucketProjectProperty(String url,  String token, boolean linkEnabled) {
         this.url = GitBucketUtil.trimEndSlash(url);
         this.linkEnabled = linkEnabled;
+        this.token = Secret.fromString(Util.fixEmptyAndTrim(token));
     }
 
     @Override
