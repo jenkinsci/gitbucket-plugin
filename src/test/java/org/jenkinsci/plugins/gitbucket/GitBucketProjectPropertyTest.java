@@ -34,9 +34,16 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import java.util.Collection;
 import java.util.Iterator;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,8 +54,11 @@ import static org.mockito.Mockito.when;
  */
 public class GitBucketProjectPropertyTest {
 
+    @Rule
+    public JenkinsRule j = new JenkinsRule();
+
     private static final String GITBUCKET_URL = "http://localhost/gitbucket/sogabe/gitbucket-plugin";
-    
+
     private GitBucketProjectProperty target;
 
     @Test
@@ -71,7 +81,7 @@ public class GitBucketProjectPropertyTest {
 
         assertThat(actual, is(GITBUCKET_URL));
     }
-    
+
     @Test
     public void testNormalizeUrl_EndWithSpace() {
         // end with " "
@@ -190,5 +200,5 @@ public class GitBucketProjectPropertyTest {
         assertThat(actual, notNullValue());
         assertThat(actual, sameInstance(gpp));
     }
-    
+
 }

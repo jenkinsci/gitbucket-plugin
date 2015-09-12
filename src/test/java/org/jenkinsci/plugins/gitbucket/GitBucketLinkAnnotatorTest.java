@@ -26,7 +26,9 @@ package org.jenkinsci.plugins.gitbucket;
 import hudson.MarkupText;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
@@ -40,13 +42,17 @@ import static org.mockito.Mockito.when;
 
 public class GitBucketLinkAnnotatorTest {
 
-    private static final String GITBUCKET_URL = "http://bacons.ddo.jp/gitbucket/jenkins/gitbucket-plugin/";
+    @Rule
+    public JenkinsRule j = new JenkinsRule();
+
+    private static final String GITBUCKET_URL
+            = "http://bacons.ddo.jp/gitbucket/jenkins/gitbucket-plugin/";
 
     @Test
-    public void testAnnoate() {
+    public void testAnnotate() {
         FreeStyleProject job = mock(FreeStyleProject.class);
         FreeStyleBuild build = mock(FreeStyleBuild.class);
-        GitBucketProjectProperty gpp =  new GitBucketProjectProperty(GITBUCKET_URL, true);
+        GitBucketProjectProperty gpp = new GitBucketProjectProperty(GITBUCKET_URL, true);
         when(build.getProject()).thenReturn(job);
         when(job.getProperty(GitBucketProjectProperty.class)).thenReturn(gpp);
 
@@ -60,8 +66,8 @@ public class GitBucketLinkAnnotatorTest {
 
     @Test
     public void testAnnoate_NoProjectProperty() {
-    	FreeStyleProject job = mock(FreeStyleProject.class);
-    	FreeStyleBuild build = mock(FreeStyleBuild.class);
+        FreeStyleProject job = mock(FreeStyleProject.class);
+        FreeStyleBuild build = mock(FreeStyleBuild.class);
         GitBucketProjectProperty gpp = null;
         when(build.getProject()).thenReturn(job);
         when(job.getProperty(GitBucketProjectProperty.class)).thenReturn(gpp);
@@ -76,8 +82,8 @@ public class GitBucketLinkAnnotatorTest {
 
     @Test
     public void testAnnoate_LinkDisabled() {
-    	FreeStyleProject job = mock(FreeStyleProject.class);
-    	FreeStyleBuild build = mock(FreeStyleBuild.class);
+        FreeStyleProject job = mock(FreeStyleProject.class);
+        FreeStyleBuild build = mock(FreeStyleBuild.class);
         GitBucketProjectProperty gpp = new GitBucketProjectProperty(GITBUCKET_URL, false);
         when(build.getProject()).thenReturn(job);
         when(job.getProperty(GitBucketProjectProperty.class)).thenReturn(gpp);
@@ -137,7 +143,7 @@ public class GitBucketLinkAnnotatorTest {
         assertAnnotatedTextEquals(
                 "(Close #1) (Fixed #3) Fixed XSS.",
                 "(<a href='" + GITBUCKET_URL + "issues/1'>Close #1</a>) "
-                        + "(<a href='" + GITBUCKET_URL + "issues/3'>Fixed #3</a>) Fixed XSS.");
+                + "(<a href='" + GITBUCKET_URL + "issues/3'>Fixed #3</a>) Fixed XSS.");
     }
 
     @Test

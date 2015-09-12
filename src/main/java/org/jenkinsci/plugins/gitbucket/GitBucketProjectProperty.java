@@ -63,8 +63,13 @@ public class GitBucketProjectProperty extends JobProperty<AbstractProject<?, ?>>
         return token;
     }
 
+    @Deprecated
+    public GitBucketProjectProperty(String url, boolean linkEnabled) {
+        this(url, null, linkEnabled);
+    }
+
     @DataBoundConstructor
-    public GitBucketProjectProperty(String url,  String token, boolean linkEnabled) {
+    public GitBucketProjectProperty(String url, String token, boolean linkEnabled) {
         this.url = GitBucketUtil.trimEndSlash(url);
         this.linkEnabled = linkEnabled;
         this.token = Secret.fromString(Util.fixEmptyAndTrim(token));
